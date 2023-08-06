@@ -277,7 +277,7 @@ class WaveletTransformTorch(WaveletTransformBase):
         scale distribution and uses this for initialization of the wavelet filter bank.
         If there is only one example in the batch the batch dimension is squeezed.
 
-        :param x: np.ndarray, batch of signals of shape [n_batch,signal_length]
+        :param x: torch.tensor, batch of signals of shape [n_batch,signal_length]
         :return: np.ndarray, CWT for each signal in the batch [n_batch,n_scales,signal_length]
         """
 
@@ -299,29 +299,32 @@ class WaveletTransformTorch(WaveletTransformBase):
             self.signal_length = signal_length
 
         # Move to GPU and perform CWT computation
-        x = torch.from_numpy(x).type(torch.FloatTensor)
+        # x = torch.from_numpy(x).type(torch.FloatTensor)
+        x = x.type(torch.FloatTensor)
         x.requires_grad_(requires_grad=False)
 
         if self._cuda: x = x.cuda()
         cwt = self._extractor(x)
 
         # Move back to CPU
-        cwt = cwt.detach()
-        if self._cuda:  cwt = cwt.cpu()
-        cwt = cwt.numpy()
+        # cwt = cwt.detach()
+        # if self._cuda:  cwt = cwt.cpu()
+        # cwt = cwt.numpy()
 
         if self.complex_wavelet:
             # Combine real and imag parts, returns object of shape
             # [n_batch,n_scales,signal_length] of type np.complex128
-            cwt = (cwt[:,:,0,:] + cwt[:,:,1,:]*1j).astype(self.output_dtype)
+            # cwt = (cwt[:,:,0,:] + cwt[:,:,1,:]*1j).astype(self.output_dtype)
+            cwt = torch.abs(cwt[:,:,0,:] + cwt[:,:,1,:]*1j)
         else:
             # Just squeeze the chn_out dimension (=1) to obtain an object of shape
             # [n_batch,n_scales,signal_length] of type np.float64
-            cwt = np.squeeze(cwt, 2).astype(self.output_dtype)
+            # cwt = np.squeeze(cwt, 2).astype(self.output_dtype)
+            cwt = cwt.squeeze(2)
 
         # Squeeze batch dimension if single example
-        if num_examples == 1:
-            cwt = cwt.squeeze(0)
+        # if num_examples == 1:
+        #     cwt = cwt.squeeze(0)
         return cwt
 
     @property
