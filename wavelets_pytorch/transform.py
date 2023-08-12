@@ -315,7 +315,8 @@ class WaveletTransformTorch(WaveletTransformBase):
             # Combine real and imag parts, returns object of shape
             # [n_batch,n_scales,signal_length] of type np.complex128
             # cwt = (cwt[:,:,0,:] + cwt[:,:,1,:]*1j).astype(self.output_dtype)
-            cwt = torch.abs(cwt[:,:,0,:] + cwt[:,:,1,:]*1j)
+            # cwt = torch.abs(cwt[:,:,0,:] + cwt[:,:,1,:]*1j)  # causes UserWarnings
+            cwt = (cwt[:,:,0,:]**2 + cwt[:,:,1,:]**2)**0.5
         else:
             # Just squeeze the chn_out dimension (=1) to obtain an object of shape
             # [n_batch,n_scales,signal_length] of type np.float64
