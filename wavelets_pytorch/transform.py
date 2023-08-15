@@ -47,7 +47,7 @@ class WaveletTransformBase(object):
 
     """
 
-    def __init__(self, dt=1.0, dj=0.125, wavelet=Morlet(), unbias=False):
+    def __init__(self, dt=1.0, dj=0.125, wavelet=Morlet, unbias=False):
         """
         :param dt: float, sample spacing
         :param dj: float, scale distribution parameter
@@ -56,7 +56,7 @@ class WaveletTransformBase(object):
         """
         self._dt = dt
         self._dj = dj
-        self._wavelet = wavelet
+        self._wavelet = wavelet()
         self._unbias = unbias
         self._scale_minimum = self.compute_minimum_scale()
         self._signal_length = None  # initialize on first call
@@ -195,7 +195,7 @@ class WaveletTransformBase(object):
 
 class WaveletTransform(WaveletTransformBase):
 
-    def __init__(self, dt=1.0, dj=0.125, wavelet=Morlet(), unbias=False):
+    def __init__(self, dt=1.0, dj=0.125, wavelet=Morlet, unbias=False):
         """
         This is SciPy version of the CWT filter bank. Main work for this filter bank
         is performed by the convolution implementated in 'scipy.signal.convolve'
@@ -252,7 +252,7 @@ class WaveletTransform(WaveletTransformBase):
 
 class WaveletTransformTorch(WaveletTransformBase):
 
-    def __init__(self, dt=1.0, dj=0.125, wavelet=Morlet(), unbias=False, cuda=True):
+    def __init__(self, dt=1.0, dj=0.125, wavelet=Morlet, unbias=False, cuda=True):
         """
         This is PyTorch version of the CWT filter bank. Main work for this filter bank
         is performed by the convolution implementated in 'torch.nn.Conv1d'. Actual
