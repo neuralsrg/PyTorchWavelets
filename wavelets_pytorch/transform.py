@@ -207,7 +207,7 @@ class WaveletTransform(WaveletTransformBase):
         :param unbias: boolean, whether to unbias the power spectrum
         :param **kwargs: wavelet object kwargs
         """
-        super(WaveletTransform,self).__init__(dt, dj, wavelet, unbias)
+        super(WaveletTransform,self).__init__(dt, dj, wavelet, unbias, *args, **kwargs)
 
     def cwt(self, x):
         """
@@ -268,7 +268,7 @@ class WaveletTransformTorch(WaveletTransformBase):
         :param cuda: boolean, whether to run convolutions on the GPU
         :param **kwargs: wavelet object kwargs
         """
-        super(WaveletTransformTorch, self).__init__(dt, dj, wavelet, unbias)
+        super(WaveletTransformTorch, self).__init__(dt, dj, wavelet, unbias, *args, **kwargs)
         self._cuda = cuda
         self._extractor = TorchFilterBank(self._filters, cuda)
 
