@@ -47,16 +47,17 @@ class WaveletTransformBase(object):
 
     """
 
-    def __init__(self, dt=1.0, dj=0.125, wavelet=Morlet, unbias=False):
+    def __init__(self, dt=1.0, dj=0.125, wavelet=None, unbias=False, *args, **kwargs):
         """
         :param dt: float, sample spacing
         :param dj: float, scale distribution parameter
         :param wavelet: wavelet object, see 'wavelets.py'
         :param unbias: boolean, whether to unbias the power spectrum
+        :param **kwargs: wavelet object kwargs
         """
         self._dt = dt
         self._dj = dj
-        self._wavelet = wavelet()
+        self._wavelet = wavelet(**kwargs) if (wavelet is not None) else Morlet()
         self._unbias = unbias
         self._scale_minimum = self.compute_minimum_scale()
         self._signal_length = None  # initialize on first call
@@ -195,7 +196,7 @@ class WaveletTransformBase(object):
 
 class WaveletTransform(WaveletTransformBase):
 
-    def __init__(self, dt=1.0, dj=0.125, wavelet=Morlet, unbias=False):
+    def __init__(self, dt=1.0, dj=0.125, wavelet=None, unbias=False, *args, **kwargs):
         """
         This is SciPy version of the CWT filter bank. Main work for this filter bank
         is performed by the convolution implementated in 'scipy.signal.convolve'
@@ -204,6 +205,7 @@ class WaveletTransform(WaveletTransformBase):
         :param dj: float, scale distribution parameter
         :param wavelet: wavelet object, see 'wavelets.py'
         :param unbias: boolean, whether to unbias the power spectrum
+        :param **kwargs: wavelet object kwargs
         """
         super(WaveletTransform,self).__init__(dt, dj, wavelet, unbias)
 
@@ -252,7 +254,7 @@ class WaveletTransform(WaveletTransformBase):
 
 class WaveletTransformTorch(WaveletTransformBase):
 
-    def __init__(self, dt=1.0, dj=0.125, wavelet=Morlet, unbias=False, cuda=True):
+    def __init__(self, dt=1.0, dj=0.125, wavelet=None, unbias=False, cuda=True, *args, **kwargs):
         """
         This is PyTorch version of the CWT filter bank. Main work for this filter bank
         is performed by the convolution implementated in 'torch.nn.Conv1d'. Actual
@@ -264,6 +266,7 @@ class WaveletTransformTorch(WaveletTransformBase):
         :param wavelet: wavelet object, see 'wavelets.py'
         :param unbias: boolean, whether to unbias the power spectrum
         :param cuda: boolean, whether to run convolutions on the GPU
+        :param **kwargs: wavelet object kwargs
         """
         super(WaveletTransformTorch, self).__init__(dt, dj, wavelet, unbias)
         self._cuda = cuda
